@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath com.github.cc007.bayespam.Bayespam "D:\MEGA\school\Universiteit\KI2\ass2\spam-filter\train" "D:\MEGA\school\Universiteit\KI2\ass2\spam-filter\test"</exec.args>
+                <exec.args>-classpath %classpath com.github.cc007.bayespam.BigramBayespam "D:\MEGA\school\Universiteit\KI2\ass2\spam-filter\train" "D:\MEGA\school\Universiteit\KI2\ass2\spam-filter\test"</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -24,9 +24,9 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath com.github.cc007.bayespam.Bayespam "D:\MEGA\school\Universiteit\KI2\ass2\spam-filter\train" "D:\MEGA\school\Universiteit\KI2\ass2\spam-filter\test"</exec.args>
-                <exec.executable>java</exec.executable>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath com.github.cc007.bayespam.BigramBayespam "D:\MEGA\school\Universiteit\KI2\ass2\spam-filter\train" "D:\MEGA\school\Universiteit\KI2\ass2\spam-filter\test"</exec.args>
                 <jpda.listen>true</jpda.listen>
+                <exec.executable>java</exec.executable>
             </properties>
         </action>
         <action>
@@ -39,7 +39,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath com.github.cc007.bayespam.Bayespam "D:\MEGA\school\Universiteit\KI2\ass2\spam-filter\train" "D:\MEGA\school\Universiteit\KI2\ass2\spam-filter\test"</exec.args>
+                <exec.args>-classpath %classpath com.github.cc007.bayespam.BigramBayespam "D:\MEGA\school\Universiteit\KI2\ass2\spam-filter\train" "D:\MEGA\school\Universiteit\KI2\ass2\spam-filter\test"</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

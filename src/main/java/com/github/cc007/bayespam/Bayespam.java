@@ -17,6 +17,8 @@ public class Bayespam {
 
 		int counter_spam = 0;
 		int counter_regular = 0;
+        
+        /// conditional likelyhood storage for spam and regular
 		double conditional_likeyhood_spam;
 		double conditional_likeyhood_regular;
 
@@ -33,9 +35,14 @@ public class Bayespam {
 	// Listings of the two subdirectories (regular/ and spam/)
 	private static File[] listing_regular = new File[0];
 	private static File[] listing_spam = new File[0];
-	private static final double epsilon = 1;
+    
+    /// epsilon for calculating probability
+	private static final double epsilon = 0.05;
+    
+    /// prior probability storgae for regular and spam
 	private static double priorRegular;
 	private static double priorSpam;
+    
 	// A hash table for the vocabulary (word searching is very fast in a hash table)
 	private static final Hashtable<String, Multiple_Counter> vocab = new Hashtable<>();
 
@@ -96,7 +103,7 @@ public class Bayespam {
 			FileInputStream i_s = new FileInputStream(messages[i]);
 			BufferedReader in = new BufferedReader(new InputStreamReader(i_s));
 			String line;
-			String word;
+			String token;
 
 			while ((line = in.readLine()) != null) // read a line
 			{
@@ -105,7 +112,7 @@ public class Bayespam {
 				while (st.hasMoreTokens()) // while there are stille words left..
 				{
 					/// I set everything to lower case and filter all non-letter characters from the text
-					String token = st.nextToken().toLowerCase().replaceAll("[^a-z]", "");
+					token = st.nextToken().toLowerCase().replaceAll("[^a-z]", "");
 					/// I only add words longer than or equal to 4 characters
 					if (token.length() >= 4) {
 						addWord(token, type);                  // add them to the vocabulary
@@ -123,7 +130,7 @@ public class Bayespam {
 		FileInputStream i_s = new FileInputStream(file);
 		BufferedReader in = new BufferedReader(new InputStreamReader(i_s));
 		String line;
-		String word;
+		String token;
 
 		/// Initialize probabilities to the prior log values
 		double pRegular = priorRegular;
@@ -135,7 +142,7 @@ public class Bayespam {
 			while (st.hasMoreTokens()) // while there are stille words left..
 			{
 				/// I set everything to lower case and filter all non-letter characters from the text
-				String token = st.nextToken().toLowerCase().replaceAll("[^a-z]", "");
+				token = st.nextToken().toLowerCase().replaceAll("[^a-z]", "");
 				/// If the word is in the vocab, add the conditional likelyhood log value to the probability
 				if (vocab.containsKey(token)) {
 					pRegular += vocab.get(token).conditional_likeyhood_regular;
@@ -199,7 +206,7 @@ public class Bayespam {
 			counter.conditional_likeyhood_spam = Math.log(counter.conditional_likeyhood_spam);
 		}
 
-		// Location of the directory (the path) taken from the cmd line (first arg)
+		// Location of the directory (the path) taken from the cmd line (second arg)
 		dir_location = new File(args[1]);
 
 		// Check if the cmd line arg is a directory
