@@ -1,3 +1,5 @@
+package com.github.cc007.clustering;
+
 public abstract class ClusteringAlgorithm
 {
 	public abstract boolean train();

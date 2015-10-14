@@ -1,3 +1,4 @@
+package com.github.cc007.clustering;
 import java.io.*;
 import java.util.*;
 
