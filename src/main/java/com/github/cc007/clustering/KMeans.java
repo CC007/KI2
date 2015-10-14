@@ -116,8 +116,8 @@ public class KMeans extends ClusteringAlgorithm
 				clusters[cluster].currentMembers.remove(member);
 				clusters[cluster].previousMembers.add(member);
 				clusters[closestCluster].currentMembers.add(member);
-				if (clusters[closestCluster].previousMembers.contains(member)) {
-				    change = false;
+				if (!clusters[closestCluster].previousMembers.contains(member)) {
+				    change = true;
 				}
 			    }
 			}
