@@ -53,12 +53,75 @@ public class KMeans extends ClusteringAlgorithm
 			clusters[ic] = new Cluster();
 	}
 
+// return the distance between two examples
+    private float getDistance(float[] exampleA, float[] exampleB) {
+        float distance = 0;
+        for (int i = 0; i < exampleA.length; i++) {
+            distance = distance + (float) Math.pow(exampleA[i] - exampleB[i], 2);
+        }
+        return (float) Math.sqrt(distance);
+    }
+
+    // finds the closest cluster mean for an example
+    private int getClosestCluster(int example) {
+        int closestCluster = 0;
+        float closestPrototypeDistance = getDistance( (float[]) trainData.get(example), clusters[0].prototype);
+        for (int cluster = 1; cluster < k; cluster++) {
+            float prototypeDistance = getDistance( (float[]) trainData.get(example), clusters[cluster].prototype);
+            if (prototypeDistance < closestPrototypeDistance) {
+                closestCluster = cluster;
+                closestPrototypeDistance = prototypeDistance;
+            }
+        }
+        return closestCluster;
+    }
+
+    // calculate the prototype for a cluster
+    private float[] calculatePrototype(int cluster) {
+        float[] prototype = new float[trainData.get(0).length];
+        int numMembers = clusters[cluster].currentMembers.size();
+        for (int memberId = 0; memberId < numMembers; memberId++) {
+            float[] member = trainData.get(memberId);
+            for (int i = 0; i < prototype.length; i++) {
+                prototype[i] = prototype[i] + member[i];
+            }
+        }
+        for (int i = 0; i < prototype.length; i++) {
+            prototype[i] = prototype[i] / numMembers;
+        }
+        return prototype;
+    }
 
 	public boolean train()
 	{
 	 	//implement k-means algorithm here:
 		// Step 1: Select an initial random partioning with k clusters
-		// Step 2: Generate a new partition by assigning each datapoint to its closest cluster center
+		Random rng = new Random();
+		for (int example = 0; example < trainData.capacity(); example++) {
+		    clusters[rng.nextInt(k)].currentMembers.add(example);
+		}
+        
+		boolean change = true;
+		while (change == true) {
+		    change = false;
+		    for (int cluster = 0; cluster < k; cluster++) {
+			clusters[cluster].prototype = calculatePrototype(cluster);
+		    }
+		    // Step 2: Generate a new partition by assigning each datapoint to its closest cluster center
+		    for (int cluster = 0; cluster < k; cluster++) {
+			for (int member = 0; member < clusters[cluster].currentMembers.size(); member++) {
+			    int closestCluster = getClosestCluster(member);
+			    if (closestCluster != cluster) {
+				clusters[cluster].currentMembers.remove(member);
+				clusters[cluster].previousMembers.add(member);
+				clusters[closestCluster].currentMembers.add(member);
+				if (!clusters[closestCluster].previousMembers.contains(member)) {
+				    change = true;
+				}
+			    }
+			}
+		    }
+		}
 		// Step 3: recalculate cluster centers
 		// Step 4: repeat until clustermembership stabilizes
 		return false;
@@ -74,6 +137,34 @@ public class KMeans extends ClusteringAlgorithm
 		// count number of hits
 		// count number of requests
 		// set the global variables hitrate and accuracy to their appropriate value
+        int hits = 0;
+        int prefetched = 0;
+        int requests = 0;
+        Iterator iter;
+        for (int i = 0; i < this.k; i++)
+        {
+          for (iter = this.clusters[i].currentMembers.iterator(); iter.hasNext(); )
+          {
+            int clientID = ((Integer)iter.next()).intValue();
+            float[] test = (float[])this.testData.get(clientID);
+            for (int i2 = 0; i2 < this.dim; i2++)
+            {
+              if (this.clusters[i].prototype[i2] > this.prefetchThreshold)
+              {
+                prefetched++;
+                if ((int)Math.rint(test[i2]) == 1)
+                  hits++;
+              }
+              if ((int)Math.rint(test[i2]) == 1) {
+                requests++;
+              }
+            }
+          }
+
+        }
+
+        this.hitrate = (hits / requests);
+        this.accuracy = (hits / prefetched);
 		return true;
 	}
 
