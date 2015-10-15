@@ -1,4 +1,6 @@
 package com.github.cc007.clustering;
+//Elbert Fliek (s1917188)
+//Rik Schaaf (s2391198)
 
 import java.util.*;
 
