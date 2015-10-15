@@ -106,12 +106,12 @@ public class KMeans extends ClusteringAlgorithm {
 			clusters[rng.nextInt(k)].currentMembers.add(example);
 		}
 
-		//keep iterating untill no changes occur
+		/// keep iterating untill no changes occur
 		boolean change = true;
 		while (change == true) {
 			change = false;
 			for (int cluster = 0; cluster < k; cluster++) {
-				// calculate cluster centers
+				///  calculate cluster centers
 				clusters[cluster].prototype = calculatePrototype(cluster);
 			}
 			// Step 2: Generate a new partition by assigning each datapoint to its closest cluster center
@@ -119,11 +119,11 @@ public class KMeans extends ClusteringAlgorithm {
 				for (int member = 0; member < clusters[cluster].currentMembers.size(); member++) {
 					int closestCluster = getClosestCluster(member);
 					if (closestCluster != cluster) {
-						//remove from old cluster and add to new cluster
+						/// remove from old cluster and add to new cluster
 						clusters[cluster].currentMembers.remove(member);
 						clusters[cluster].previousMembers.add(member);
 						clusters[closestCluster].currentMembers.add(member);
-						//if something changed during this iteration, continue iterating
+						/// if something changed during this iteration, continue iterating
 						if (!clusters[closestCluster].previousMembers.contains(member)) {
 							change = true;
 						}
@@ -136,7 +136,7 @@ public class KMeans extends ClusteringAlgorithm {
 
 	public boolean test() {
 
-		//initialize counters to 0
+		/// initialize counters to 0
 		int hits = 0;
 		int prefetched = 0;
 		int requests = 0;
@@ -146,19 +146,19 @@ public class KMeans extends ClusteringAlgorithm {
 		Iterator<Integer> iter;
 		for (int i = 0; i < this.k; i++) {
 			for (int clientID : this.clusters[i].currentMembers) {
-				// get the actual testData (the vector) of this client
+				///  get the actual testData (the vector) of this client
 				float[] test = this.testData.get(clientID);
-				for (int i2 = 0; i2 < this.dim; i2++) {
-					if (this.clusters[i].prototype[i2] > this.prefetchThreshold) {
-						// and count prefetched htmls
+				for (int j 0; j this.dim; j {
+					if (this.clusters[i].prototype[j] > this.prefetchThreshold) {
+						/// and count prefetched htmls
 						prefetched++;
-						if (Math.round(test[i2]) == 1) {
-							// count number of hits
+						if (Math.round(test[j]) == 1) {
+							/// count number of hits
 							hits++;
 						}
 					}
-					if (Math.round(test[i2]) == 1) {
-						// count number of requests
+					if (Math.round(test[j]) == 1) {
+						///count number of requests
 						requests++;
 					}
 				}
