@@ -118,8 +118,8 @@ public class Kohonen extends ClusteringAlgorithm {
 			for (int i = 0; i < result.length; i++) {
 				result[i] /= vectors.size();
 			}
-		}else{
-			result = new float[]{0.5f, 0.5f, 0.5f};
+		} else {
+			result = new float[]{0f};
 		}
 		return result;
 	}
@@ -128,9 +128,10 @@ public class Kohonen extends ClusteringAlgorithm {
 	private void updatePrototype(Cluster cluster, Vector<float[]> neighborhood, int epoch) {
 		float learningRate = currentLearingRate(epoch);
 		float[] mean = meanVector(neighborhood);
-
-		for (int i = 0; i < cluster.prototype.length; i++) {
-			cluster.prototype[i] = (1 - learningRate) * cluster.prototype[i] + learningRate * mean[i];
+		if (mean.length != 1) {
+			for (int i = 0; i < cluster.prototype.length; i++) {
+				cluster.prototype[i] = (1 - learningRate) * cluster.prototype[i] + learningRate * mean[i];
+			}
 		}
 	}
 
