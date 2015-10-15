@@ -148,7 +148,7 @@ public class KMeans extends ClusteringAlgorithm {
 			for (int clientID : this.clusters[i].currentMembers) {
 				///  get the actual testData (the vector) of this client
 				float[] test = this.testData.get(clientID);
-				for (int j 0; j this.dim; j {
+				for (int j = 0; j < this.dim; j++) {
 					if (this.clusters[i].prototype[j] > this.prefetchThreshold) {
 						/// and count prefetched htmls
 						prefetched++;
