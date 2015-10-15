@@ -75,7 +75,7 @@ public class Kohonen extends ClusteringAlgorithm {
 	}
 
 	private float currentLearingRate(int epoch) {
-		return (float) (initialLearningRate * (1 - (float)epoch / epochs));
+		return (float) (initialLearningRate * (1 - (float) epoch / epochs));
 	}
 
 	private float currentNeighborhoodSize(int epoch) {
@@ -110,13 +110,14 @@ public class Kohonen extends ClusteringAlgorithm {
 		float learningRate = currentLearingRate(epoch);
 		float[] mean = meanVector(neighborhood);
 		for (int i = 0; i < cluster.prototype.length; i++) {
-			cluster.prototype[i] = (1-learningRate)*cluster.prototype[i] + learningRate * mean[i];
+			cluster.prototype[i] = (1 - learningRate) * cluster.prototype[i] + learningRate * mean[i];
 		}
 	}
 
 	public boolean train() {
 		for (int epoch = 0; epoch < epochs; epoch++) {
-			for (float[] trainData1 : trainData) {
+			for (int member = 0; member < trainData.size(); member++) {
+				float[] trainData1 = trainData.get(member);
 				float closest = Float.MAX_VALUE;
 				int closestI = 0;
 				int closestJ = 0;
@@ -132,8 +133,12 @@ public class Kohonen extends ClusteringAlgorithm {
 						}
 					}
 				}
-				Vector<float[]> neighborhood = getNeighborhood(clusters[closestI][closestJ], epoch);
-				updatePrototype(clusters[closestI][closestJ], neighborhood, epoch);
+				if (epoch == epochs - 1) {
+					clusters[closestI][closestJ].currentMembers.add(member);
+				} else {
+					Vector<float[]> neighborhood = getNeighborhood(clusters[closestI][closestJ], epoch);
+					updatePrototype(clusters[closestI][closestJ], neighborhood, epoch);
+				}
 			}
 		}
 		// Step 1: initialize map with random vectors (A good place to do this, is in the initialisation of the clusters)
@@ -143,7 +148,7 @@ public class Kohonen extends ClusteringAlgorithm {
 		// For each vector its Best Matching Unit is found, and :
 		// Step 4: All nodes within the neighbourhood of the BMU are changed, you don't have to use distance relative learning.
 		// Since training kohonen maps can take quite a while, presenting the user with a progress bar would be nice
-		
+
 		return true;
 	}
 
@@ -156,6 +161,32 @@ public class Kohonen extends ClusteringAlgorithm {
 		// count number of hits
 		// count number of requests
 		// set the global variables hitrate and accuracy to their appropriate value
+		int hits = 0;
+		int prefetched = 0;
+		int requests = 0;
+		Iterator<Integer> iter;
+		for (int i = 0; i < clusters.length; i++) {
+			for (int j = 0; j < clusters[i].length; j++) {
+				Cluster cluster = clusters[i][j];
+
+				for (int clientID : cluster.currentMembers) {
+					float[] test = this.testData.get(clientID);
+					for (int i2 = 0; i2 < this.dim; i2++) {
+						if (cluster.prototype[i2] > this.prefetchThreshold) {
+							prefetched++;
+							if (Math.round(test[i2]) == 1) {
+								hits++;
+							}
+						}
+						if (Math.round(test[i2]) == 1) {
+							requests++;
+						}
+					}
+				}
+			}
+		}
+		this.hitrate = ((double)hits / requests);
+		this.accuracy = ((double)hits / prefetched);
 		return true;
 	}
 
