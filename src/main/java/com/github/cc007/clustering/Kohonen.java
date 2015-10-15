@@ -183,6 +183,8 @@ public class Kohonen extends ClusteringAlgorithm {
 		// count number of hits
 		// count number of requests
 		// set the global variables hitrate and accuracy to their appropriate value
+		
+		/// similar as in KMeans, but looping over a 2D cluster array
 		int hits = 0;
 		int prefetched = 0;
 		int requests = 0;
@@ -191,8 +193,8 @@ public class Kohonen extends ClusteringAlgorithm {
 			for (int j = 0; j < clusters[i].length; j++) {
 				Cluster cluster = clusters[i][j];
 
-				for (int clientID : cluster.currentMembers) {
-					float[] test = this.testData.get(clientID);
+				for (int client : cluster.currentMembers) {
+					float[] test = this.testData.get(client);
 					for (int i2 = 0; i2 < this.dim; i2++) {
 						if (cluster.prototype[i2] > this.prefetchThreshold) {
 							prefetched++;
