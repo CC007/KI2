@@ -3,6 +3,10 @@ package com.github.cc007.clustering;
 import java.util.*;
 import java.util.stream.DoubleStream;
 
+/**
+ * @author Elbert Fliek (s1917188)
+ * @author Rik Schaaf (s2391198)
+*/
 public class Kohonen extends ClusteringAlgorithm {
 
 	// Size of clustersmap
@@ -66,6 +70,7 @@ public class Kohonen extends ClusteringAlgorithm {
 		}
 	}
 
+	/// calculate the euclidean distance by using the square root of the sum of squares
 	private float euclideanDistance(float[] a, float[] b) {
 		double[] diffSq = new double[a.length];
 		for (int i = 0; i < diffSq.length; i++) {
@@ -74,18 +79,22 @@ public class Kohonen extends ClusteringAlgorithm {
 		return (float) Math.sqrt(DoubleStream.of(diffSq).sum());
 	}
 
+	/// return the current learning rate based on the current epoch
 	private float currentLearingRate(int epoch) {
 		return (float) (initialLearningRate * (1 - (float) epoch / epochs));
 	}
 
+	/// return the current neigborhood size based on the current epoch
 	private float currentNeighborhoodSize(int epoch) {
 		return n / 2 * (1 - epoch / epochs);
 	}
 
+	/// return the neighborhood of a cluster based on the epoch number
 	private Vector<float[]> getNeighborhood(Cluster cluster, int epoch) {
 		float radius = currentNeighborhoodSize(epoch);
 		Vector neighborhood = new Vector();
 		for (float[] trainData1 : trainData) {
+			/// add only to the neighborhood if the euclidean distance to the prototype is smaller than the radius
 			if (euclideanDistance(cluster.prototype, trainData1) < radius) {
 				neighborhood.add(trainData1);
 			}
@@ -93,34 +102,44 @@ public class Kohonen extends ClusteringAlgorithm {
 		return neighborhood;
 	}
 
+	/// calculate the mean vector of a group of vectors
 	private float[] meanVector(Vector<float[]> vectors) {
 		float[] result = new float[vectors.get(0).length];
+		/// add all vectors to the result vector
 		for (float[] vector : vectors) {
 			for (int i = 0; i < vector.length; i++) {
 				result[i] += vector[i];
 			}
 		}
+		
+		/// divide the result vector by the amount of vectors
 		for (int i = 0; i < result.length; i++) {
 			result[i] /= vectors.size();
 		}
 		return result;
 	}
 
+	/// calculate the new prototype based on the vectors in the neigborhood of the prototype.
 	private void updatePrototype(Cluster cluster, Vector<float[]> neighborhood, int epoch) {
 		float learningRate = currentLearingRate(epoch);
 		float[] mean = meanVector(neighborhood);
+		
 		for (int i = 0; i < cluster.prototype.length; i++) {
 			cluster.prototype[i] = (1 - learningRate) * cluster.prototype[i] + learningRate * mean[i];
 		}
 	}
 
 	public boolean train() {
+		/// loop over all epochs
 		for (int epoch = 0; epoch < epochs; epoch++) {
+			/// loop over all members
 			for (int member = 0; member < trainData.size(); member++) {
 				float[] trainData1 = trainData.get(member);
 				float closest = Float.MAX_VALUE;
 				int closestI = 0;
 				int closestJ = 0;
+
+				/// find the closest cluster using euclidean distance
 				for (int i = 0; i < clusters.length; i++) {
 					Cluster[] cluster = clusters[i];
 					for (int j = 0; j < cluster.length; j++) {
@@ -133,9 +152,12 @@ public class Kohonen extends ClusteringAlgorithm {
 						}
 					}
 				}
+
 				if (epoch == epochs - 1) {
+					/// in the last epoch, add the members to the cluster that was found
 					clusters[closestI][closestJ].currentMembers.add(member);
 				} else {
+					/// else calculate the neigborhood for the cluster that was found and update the prototype based on that
 					Vector<float[]> neighborhood = getNeighborhood(clusters[closestI][closestJ], epoch);
 					updatePrototype(clusters[closestI][closestJ], neighborhood, epoch);
 				}
@@ -185,8 +207,8 @@ public class Kohonen extends ClusteringAlgorithm {
 				}
 			}
 		}
-		this.hitrate = ((double)hits / requests);
-		this.accuracy = ((double)hits / prefetched);
+		this.hitrate = ((double) hits / requests);
+		this.accuracy = ((double) hits / prefetched);
 		return true;
 	}
 
