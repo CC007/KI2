@@ -189,10 +189,8 @@ public class Kohonen extends ClusteringAlgorithm {
 		int prefetched = 0;
 		int requests = 0;
 		Iterator<Integer> iter;
-		for (int i = 0; i < clusters.length; i++) {
-			for (int j = 0; j < clusters[i].length; j++) {
-				Cluster cluster = clusters[i][j];
-
+		for (Cluster[] cluster1 : clusters) {
+			for (Cluster cluster : cluster1) {
 				for (int client : cluster.currentMembers) {
 					float[] test = this.testData.get(client);
 					for (int i2 = 0; i2 < this.dim; i2++) {
