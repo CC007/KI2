@@ -6,7 +6,7 @@ import java.util.stream.DoubleStream;
 /**
  * @author Elbert Fliek (s1917188)
  * @author Rik Schaaf (s2391198)
-*/
+ */
 public class Kohonen extends ClusteringAlgorithm {
 
 	// Size of clustersmap
@@ -104,17 +104,22 @@ public class Kohonen extends ClusteringAlgorithm {
 
 	/// calculate the mean vector of a group of vectors
 	private float[] meanVector(Vector<float[]> vectors) {
-		float[] result = new float[vectors.get(0).length];
-		/// add all vectors to the result vector
-		for (float[] vector : vectors) {
-			for (int i = 0; i < vector.length; i++) {
-				result[i] += vector[i];
+		float[] result;
+		if (vectors.size() > 0) {
+			result = new float[vectors.get(0).length];
+			/// add all vectors to the result vector
+			for (float[] vector : vectors) {
+				for (int i = 0; i < vector.length; i++) {
+					result[i] += vector[i];
+				}
 			}
-		}
-		
-		/// divide the result vector by the amount of vectors
-		for (int i = 0; i < result.length; i++) {
-			result[i] /= vectors.size();
+
+			/// divide the result vector by the amount of vectors
+			for (int i = 0; i < result.length; i++) {
+				result[i] /= vectors.size();
+			}
+		}else{
+			result = new float[]{0.5f, 0.5f, 0.5f};
 		}
 		return result;
 	}
@@ -123,7 +128,7 @@ public class Kohonen extends ClusteringAlgorithm {
 	private void updatePrototype(Cluster cluster, Vector<float[]> neighborhood, int epoch) {
 		float learningRate = currentLearingRate(epoch);
 		float[] mean = meanVector(neighborhood);
-		
+
 		for (int i = 0; i < cluster.prototype.length; i++) {
 			cluster.prototype[i] = (1 - learningRate) * cluster.prototype[i] + learningRate * mean[i];
 		}
@@ -183,7 +188,7 @@ public class Kohonen extends ClusteringAlgorithm {
 		// count number of hits
 		// count number of requests
 		// set the global variables hitrate and accuracy to their appropriate value
-		
+
 		/// similar as in KMeans, but looping over a 2D cluster array
 		int hits = 0;
 		int prefetched = 0;
